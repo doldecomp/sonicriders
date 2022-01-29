@@ -8,7 +8,7 @@ else
   WINE ?= wine
 endif
 
-COMPILER_VERSION ?= 2.7
+COMPILER_VERSION ?= 2.6
 
 VERBOSE ?= 0
 

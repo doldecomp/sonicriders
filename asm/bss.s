@@ -2,6 +2,8 @@
 
 .section .bss  # 0x80125E00 - 0x8021CFA4
 
+.balign 8
+
 .global lbl_80125E00
 lbl_80125E00:
 	.skip 0x89800

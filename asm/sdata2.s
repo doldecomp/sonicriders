@@ -2,6 +2,8 @@
 
 .section .sdata2, "wa"  # 0x8021C340 - 0x8021CFA0
 
+.balign 8
+
 .global lbl_8021C340
 lbl_8021C340:
 	.incbin "baserom.dol", 0x123060, 0x8

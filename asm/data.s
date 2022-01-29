@@ -2,6 +2,8 @@
 
 .section .data, "wa"  # 0x800ED300 - 0x80125E00
 
+.balign 8
+
 .global lbl_800ED300
 lbl_800ED300:
 	.incbin "baserom.dol", 0xEA2E0, 0x80

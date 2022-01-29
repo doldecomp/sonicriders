@@ -2,6 +2,10 @@
 
 .section .rodata, "wa"  # 0x800E2F60 - 0x800ED2E0
 
+.balign 8
+
+.global lbl_800E2F60
+lbl_800E2F60:
 	.incbin "baserom.dol", 0xDFF60, 0x30
 .global lbl_800E2F90
 lbl_800E2F90:
