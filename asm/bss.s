@@ -18,13 +18,26 @@ lbl_801AF9F0:
 	.skip 0x180
 .global lbl_801AFB70
 lbl_801AFB70:
-	.skip 0x1E0
+	.skip 0xF0
+.global lbl_801AFC60
+lbl_801AFC60:
+	.skip 0x3C
+.global lbl_801AFC9C
+lbl_801AFC9C:
+	.skip 0xB4
 .global lbl_801AFD50
 lbl_801AFD50:
 	.skip 0x3000
 .global lbl_801B2D50
 lbl_801B2D50:
-	.skip 0x248
+	.skip 0x48
+
+.global lbl_801B2D98
+lbl_801B2D98:
+	.skip 0x100
+.global lbl_801B2E98
+lbl_801B2E98:
+	.skip 0x100
 .global lbl_801B2F98
 lbl_801B2F98:
 	.skip 0x148

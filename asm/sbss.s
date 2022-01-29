@@ -15,28 +15,49 @@ lbl_8021BB50:
 	.skip 0x4
 .global lbl_8021BB54
 lbl_8021BB54:
-	.skip 0xD
+	.skip 0xC
+.global lbl_8021BB60
+lbl_8021BB60:
+	.skip 0x1
 .global lbl_8021BB61
 lbl_8021BB61:
 	.skip 0x1
 .global lbl_8021BB62
 lbl_8021BB62:
-	.skip 0x2
+	.skip 0x1
+.global lbl_8021BB63
+lbl_8021BB63:
+	.skip 0x1
 .global lbl_8021BB64
 lbl_8021BB64:
-	.skip 0x8
+	.skip 0x4
+.global lbl_8021BB68
+lbl_8021BB68:
+	.skip 0x4
 .global lbl_8021BB6C
 lbl_8021BB6C:
 	.skip 0x4
 .global lbl_8021BB70
 lbl_8021BB70:
-	.skip 0xC
+	.skip 0x4
+.global lbl_8021BB74
+lbl_8021BB74:
+	.skip 0x4
+.global lbl_8021BB78
+lbl_8021BB78:
+	.skip 0x4
 .global lbl_8021BB7C
 lbl_8021BB7C:
 	.skip 0x4
 .global lbl_8021BB80
 lbl_8021BB80:
-	.skip 0xC
+	.skip 0x4
+.global lbl_8021BB84
+lbl_8021BB84:
+	.skip 0x4
+.global lbl_8021BB88
+lbl_8021BB88:
+	.skip 0x4
 .global lbl_8021BB8C
 lbl_8021BB8C:
 	.skip 0x4
@@ -96,7 +117,10 @@ lbl_8021BC0C:
 	.skip 0x4
 .global lbl_8021BC10
 lbl_8021BC10:
-	.skip 0x20
+	.skip 0x4
+.global lbl_8021BC14
+lbl_8021BC14:
+	.skip 0x1C
 .global lbl_8021BC30
 lbl_8021BC30:
 	.skip 0x8

@@ -225,7 +225,10 @@ lbl_80120FEC:
 	.incbin "baserom.dol", 0x11DFCC, 0x54
 .global lbl_80121040
 lbl_80121040:
-	.incbin "baserom.dol", 0x11E020, 0x78
+	.incbin "baserom.dol", 0x11E020, 0x3C
+.global lbl_8012107C
+lbl_8012107C:
+	.incbin "baserom.dol", 0x11E05C, 0x3C
 .global lbl_801210B8
 lbl_801210B8:
 	.incbin "baserom.dol", 0x11E098, 0x3C
