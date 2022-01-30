@@ -20,3 +20,4 @@ tools/lzss
 *.sw*
 *.dump
 __pycache__
+*.bat
