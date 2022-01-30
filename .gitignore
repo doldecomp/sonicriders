@@ -21,3 +21,5 @@ tools/lzss
 *.dump
 __pycache__
 *.bat
+errors.txt
+output.asm
