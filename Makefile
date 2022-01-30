@@ -84,7 +84,17 @@ O_FILES := $(addsuffix .o,$(basename $(SOURCES)))
 ALL_O_FILES := $(O_FILES)
 $(ELF): $(O_FILES)
 
-# TODO: Build RELs right here. Copy from SMB decomp I guess
+# _Main.rel sources
+SOURCES := \
+	asm/_Main/text.s \
+    asm/_Main/ctors.s \
+    asm/_Main/dtors.s \
+    asm/_Main/bss.s
+O_FILES := $(addsuffix .o,$(basename $(SOURCES)))
+ALL_O_FILES += $(O_FILES)
+_Main.plf: $(O_FILES)
+_Main.rel: ELF2REL_ARGS := -i 1 -o 0x0 -l 0x28 -c 14
+ALL_RELS += _Main.rel
 
 #-------------------------------------------------------------------------------
 # Recipes
@@ -92,7 +102,7 @@ $(ELF): $(O_FILES)
 
 .PHONY: all default
 
-all: $(DOL)
+all: $(DOL) $(ALL_RELS)
 	$(QUIET) $(SHA1SUM) -c sonicriders.sha1
 
 # static module (.dol file)
@@ -103,6 +113,15 @@ all: $(DOL)
 %.elf: $(DOL_LCF)
 	@echo Linking static module $@
 	$(QUIET) $(LD) -lcf $(DOL_LCF) $(DOL_LDFLAGS) $(filter %.o,$^) -map $(@:.elf=.map) -o $@
+
+# relocatable module (.rel file)
+%.rel: %.plf $(ELF) $(ELF2REL)
+	@echo Converting $(filter %.plf,$^) to $@
+	$(QUIET) $(ELF2REL) $(filter %.plf,$^) $(ELF) $@ $(ELF2REL_ARGS)
+
+%.plf: $(REL_LCF)
+	@echo Linking relocatable module $@
+	$(QUIET) $(LD) -lcf $(REL_LCF) $(REL_LDFLAGS) $(filter %.o,$^) -map $(@:.plf=.map) -o $@
 
 # Canned recipe for compiling C or C++
 # Uses CC_CHECK to check syntax and generate dependencies, compiles the file,

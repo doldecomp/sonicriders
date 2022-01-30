@@ -146,6 +146,9 @@ struct RelHeader
     uint32_t prologOffset;           // offset of the _prolog function in its section
     uint32_t epilogOffset;           // offset of the _epilog function in its section
     uint32_t unresolvedOffset;       // offset of the _unresolved function in its section
+    uint32_t align;
+    uint32_t bssAlign;
+    uint32_t fixSize;
 };
 
 struct RelRelocEntry
@@ -606,7 +609,7 @@ static void write_rel_file(struct Module *module, struct RelHeader *relHdr, cons
         fatal_error("could not open %s for writing: %s\n", filename, strerror(errno));
 
     relHdr->moduleId = module->moduleId;
-    relHdr->formatVersion = 1;
+    relHdr->formatVersion = 3;
 
     find_rel_entry_functions(module, relHdr);
 
@@ -657,6 +660,23 @@ static void write_rel_file(struct Module *module, struct RelHeader *relHdr, cons
         if ((shdr.sh_flags & SHF_ALLOC) && shdr.sh_type == SHT_NOBITS)
             relHdr->bssSize += shdr.sh_size;
     }
+    
+    // In version 3 RELs, this is BEFORE the relocation table!
+    // 3. Write module import table
+
+    relHdr->importTableOffset = filePos;
+    for (i = 0, imp = &imports[0]; i < importsCount; i++, imp++)
+    {
+        // write import table entry
+        struct { uint32_t moduleId; uint32_t relocsOffset; } ent;
+        ent.moduleId     = imp->moduleId;
+        ent.relocsOffset = imp->relocsOffset;
+        bswap32(&ent.moduleId);
+        bswap32(&ent.relocsOffset);
+        write_checked(fout, relHdr->importTableOffset + i * 8, &ent, sizeof(ent));
+        filePos += sizeof(ent);
+    }
+    relHdr->importTableSize = importsCount * 8;
 
     // 2. Write relocation data
 
@@ -729,21 +749,11 @@ static void write_rel_file(struct Module *module, struct RelHeader *relHdr, cons
 
         filePos += sizeof(ent);
     }
-
-    // 3. Write module import table
-
-    relHdr->importTableOffset = filePos;
-    for (i = 0, imp = &imports[0]; i < importsCount; i++, imp++)
-    {
-        // write import table entry
-        struct { uint32_t moduleId; uint32_t relocsOffset; } ent;
-        ent.moduleId     = imp->moduleId;
-        ent.relocsOffset = imp->relocsOffset;
-        bswap32(&ent.moduleId);
-        bswap32(&ent.relocsOffset);
-        write_checked(fout, relHdr->importTableOffset + i * 8, &ent, sizeof(ent));
-    }
-    relHdr->importTableSize = importsCount * 8;
+    
+    // 3.5. Write fixed values. VERSION 2/3 only!
+    relHdr->align = 0x20; // TODO: Read me from a section.
+    relHdr->bssAlign = 0x40; // TODO: Read me from bss section.
+    relHdr->fixSize = relHdr->relocationTableOffset; // Only 1 REL is used, so we can just do this as a hack.
 
     // 4. Write REL header.
 
@@ -761,6 +771,9 @@ static void write_rel_file(struct Module *module, struct RelHeader *relHdr, cons
     bswap32(&relHdr->prologOffset);
     bswap32(&relHdr->epilogOffset);
     bswap32(&relHdr->unresolvedOffset);
+    bswap32(&relHdr->align);
+    bswap32(&relHdr->bssAlign);
+    bswap32(&relHdr->fixSize);
     write_checked(fout, 0, relHdr, sizeof(*relHdr));
 
     fclose(fout);
