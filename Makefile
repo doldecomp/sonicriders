@@ -69,6 +69,7 @@ REL_LCF := partial.lcf
 SOURCES := \
     asm/init.s \
     asm/text.s \
+    asm/lib.s \
     asm/ctors.s \
     asm/dtors.s \
     asm/rodata.s \
