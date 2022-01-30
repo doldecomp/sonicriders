@@ -44,12 +44,32 @@ RUNTIME_INCLUDE_DIRS := libraries/PowerPC_EABI_Support/Runtime/Inc
 ASFLAGS     := -mgekko -I asm
 CFLAGS      := -O4,p -inline auto -nodefaults -proc gekko -fp hard -Cpp_exceptions off -enum int -warn pragmas -pragma 'cats off'
 CPPFLAGS     = $(addprefix -i ,$(INCLUDE_DIRS) $(dir $^)) -I- $(addprefix -i ,$(SYSTEM_INCLUDE_DIRS))
-DOL_LDFLAGS := -nodefaults -fp hard
+ifeq ($(VERBOSE),1)
+# this set of LDFLAGS outputs warnings.
+DOL_LDFLAGS := -fp hard -nodefaults
+endif
+ifeq ($(VERBOSE),0)
+# this set of LDFLAGS generates no warnings.
+DOL_LDFLAGS := -fp hard -nodefaults -w off
+endif
+
+ifeq ($(VERBOSE),1)
+# this set of LDFLAGS outputs warnings.
 REL_LDFLAGS := -nodefaults -fp hard -r1 -m _prolog -g
+endif
+ifeq ($(VERBOSE),0)
+# this set of LDFLAGS generates no warnings.
+REL_LDFLAGS := -nodefaults -fp hard -r1 -m _prolog -g -w off
+endif
 
 HOSTCFLAGS   := -Wall -O3 -s
 
 CC_CHECK     := $(GCC) -Wall -Wextra -Wno-unused -Wno-main -Wno-unknown-pragmas -Wno-unused-variable -Wno-unused-parameter -Wno-sign-compare -Wno-missing-field-initializers -Wno-char-subscripts -fsyntax-only -fno-builtin -nostdinc $(addprefix -I ,$(INCLUDE_DIRS) $(SYSTEM_INCLUDE_DIRS)) -DNONMATCHING
+
+ifeq ($(VERBOSE),0)
+# this set of ASFLAGS generates no warnings.
+ASFLAGS += -W
+endif
 
 #-------------------------------------------------------------------------------
 # Files
