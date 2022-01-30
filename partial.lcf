@@ -17,6 +17,4 @@ SECTIONS
 FORCEACTIVE
 {
     _prolog
-    _epilog
-    _unresolved
 }
