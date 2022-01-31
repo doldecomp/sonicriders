@@ -146,6 +146,9 @@ struct RelHeader
     uint32_t prologOffset;           // offset of the _prolog function in its section
     uint32_t epilogOffset;           // offset of the _epilog function in its section
     uint32_t unresolvedOffset;       // offset of the _unresolved function in its section
+    uint32_t align;
+    uint32_t bssAlign;
+    uint32_t fixSize;
 };
 
 struct RelRelocEntry
@@ -531,6 +534,23 @@ static void patch_rel24_branch_offset(uint8_t *insnp, int32_t branchOffset)
     insnp[3] = (insn >> 0)  & 0xFF;
 }
 
+static void patch_rel14_branch_offset(uint8_t *insnp, int32_t branchOffset)
+{
+    const uint32_t offsetMask = 0x0000FFFC;  // bits of instruction that contain the offset
+    uint32_t insn = (insnp[0] << 24)  // read instruction
+                  | (insnp[1] << 16)
+                  | (insnp[2] << 8)
+                  | (insnp[3] << 0);
+
+    assert(((insn >> 26) & 0x3F) == 16);  // TODO: do other instructions besides bc use R_PPC_REL14?
+    insn = (insn & ~offsetMask) | (branchOffset & offsetMask);  // patch instruction
+    // write instruction
+    insnp[0] = (insn >> 24) & 0xFF;
+    insnp[1] = (insn >> 16) & 0xFF;
+    insnp[2] = (insn >> 8)  & 0xFF;
+    insnp[3] = (insn >> 0)  & 0xFF;
+}
+
 static void patch_code_relocs(struct RelHeader *relHdr, int sectionId, uint8_t *code, size_t size)
 {
     struct RelImportEntry *import;
@@ -543,14 +563,25 @@ static void patch_code_relocs(struct RelHeader *relHdr, int sectionId, uint8_t *
     assert(import != NULL);
     for (i = 0, reloc = &import->relocs[0]; i < import->relocsCount; i++, reloc++)
     {
-        if (reloc->patchSection == sectionId && reloc->type == R_PPC_REL24)
+        if (reloc->patchSection == sectionId)
         {
             assert(reloc->patchOffset < size);
-            patch_rel24_branch_offset(
-                code + reloc->patchOffset,
-                reloc->symbolAddr - reloc->patchOffset);
-            // remove the relocation
-            reloc->type = R_PPC_NONE;
+            if (reloc->type == R_PPC_REL24)
+            {
+                patch_rel24_branch_offset(
+                    code + reloc->patchOffset,
+                    reloc->symbolAddr - reloc->patchOffset);
+                // remove the relocation
+                reloc->type = R_PPC_NONE;
+            }
+            else if (reloc->type == R_PPC_REL14)
+            {
+                patch_rel14_branch_offset(
+                    code + reloc->patchOffset,
+                    reloc->symbolAddr - reloc->patchOffset);
+                // remove the relocation
+                reloc->type = R_PPC_NONE;
+            }
         }
     }
 
@@ -592,7 +623,8 @@ static int compare_imports(const void *a, const void *b)
     const struct RelImportEntry *impA = a;
     const struct RelImportEntry *impB = b;
 
-    return impA->moduleId - impB->moduleId;
+//    return impA->moduleId - impB->moduleId;
+    return impB->moduleId - impA->moduleId;
 }
 
 static void write_rel_file(struct Module *module, struct RelHeader *relHdr, const char *filename)
@@ -606,7 +638,7 @@ static void write_rel_file(struct Module *module, struct RelHeader *relHdr, cons
         fatal_error("could not open %s for writing: %s\n", filename, strerror(errno));
 
     relHdr->moduleId = module->moduleId;
-    relHdr->formatVersion = 1;
+    relHdr->formatVersion = 3;
 
     find_rel_entry_functions(module, relHdr);
 
@@ -657,9 +689,12 @@ static void write_rel_file(struct Module *module, struct RelHeader *relHdr, cons
         if ((shdr.sh_flags & SHF_ALLOC) && shdr.sh_type == SHT_NOBITS)
             relHdr->bssSize += shdr.sh_size;
     }
-
+    
     // 2. Write relocation data
 
+    // In version 3 RELs, this is AFTER the import table, so skip over the import table for now
+    relHdr->importTableOffset = filePos;
+    filePos += 8 * importsCount;
     relHdr->relocationTableOffset = filePos;
     // sort imports by module id
     qsort(imports, importsCount, sizeof(struct RelImportEntry), compare_imports);
@@ -732,7 +767,7 @@ static void write_rel_file(struct Module *module, struct RelHeader *relHdr, cons
 
     // 3. Write module import table
 
-    relHdr->importTableOffset = filePos;
+    //relHdr->importTableOffset = filePos;
     for (i = 0, imp = &imports[0]; i < importsCount; i++, imp++)
     {
         // write import table entry
@@ -744,6 +779,11 @@ static void write_rel_file(struct Module *module, struct RelHeader *relHdr, cons
         write_checked(fout, relHdr->importTableOffset + i * 8, &ent, sizeof(ent));
     }
     relHdr->importTableSize = importsCount * 8;
+    
+    // 3.5. Write fixed values. VERSION 2/3 only!
+    relHdr->align = 0x20; // TODO: Read me from a section.
+    relHdr->bssAlign = 0x40; // TODO: Read me from bss section.
+    relHdr->fixSize = relHdr->relocationTableOffset; // Only 1 REL is used, so we can just do this as a hack.
 
     // 4. Write REL header.
 
@@ -761,6 +801,9 @@ static void write_rel_file(struct Module *module, struct RelHeader *relHdr, cons
     bswap32(&relHdr->prologOffset);
     bswap32(&relHdr->epilogOffset);
     bswap32(&relHdr->unresolvedOffset);
+    bswap32(&relHdr->align);
+    bswap32(&relHdr->bssAlign);
+    bswap32(&relHdr->fixSize);
     write_checked(fout, 0, relHdr, sizeof(*relHdr));
 
     fclose(fout);
