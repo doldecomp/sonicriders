@@ -534,6 +534,23 @@ static void patch_rel24_branch_offset(uint8_t *insnp, int32_t branchOffset)
     insnp[3] = (insn >> 0)  & 0xFF;
 }
 
+static void patch_rel14_branch_offset(uint8_t *insnp, int32_t branchOffset)
+{
+    const uint32_t offsetMask = 0x0000FFFC;  // bits of instruction that contain the offset
+    uint32_t insn = (insnp[0] << 24)  // read instruction
+                  | (insnp[1] << 16)
+                  | (insnp[2] << 8)
+                  | (insnp[3] << 0);
+
+    assert(((insn >> 26) & 0x3F) == 16);  // TODO: do other instructions besides bc use R_PPC_REL14?
+    insn = (insn & ~offsetMask) | (branchOffset & offsetMask);  // patch instruction
+    // write instruction
+    insnp[0] = (insn >> 24) & 0xFF;
+    insnp[1] = (insn >> 16) & 0xFF;
+    insnp[2] = (insn >> 8)  & 0xFF;
+    insnp[3] = (insn >> 0)  & 0xFF;
+}
+
 static void patch_code_relocs(struct RelHeader *relHdr, int sectionId, uint8_t *code, size_t size)
 {
     struct RelImportEntry *import;
@@ -546,14 +563,25 @@ static void patch_code_relocs(struct RelHeader *relHdr, int sectionId, uint8_t *
     assert(import != NULL);
     for (i = 0, reloc = &import->relocs[0]; i < import->relocsCount; i++, reloc++)
     {
-        if (reloc->patchSection == sectionId && reloc->type == R_PPC_REL24)
+        if (reloc->patchSection == sectionId)
         {
             assert(reloc->patchOffset < size);
-            patch_rel24_branch_offset(
-                code + reloc->patchOffset,
-                reloc->symbolAddr - reloc->patchOffset);
-            // remove the relocation
-            reloc->type = R_PPC_NONE;
+            if (reloc->type == R_PPC_REL24)
+            {
+                patch_rel24_branch_offset(
+                    code + reloc->patchOffset,
+                    reloc->symbolAddr - reloc->patchOffset);
+                // remove the relocation
+                reloc->type = R_PPC_NONE;
+            }
+            else if (reloc->type == R_PPC_REL14)
+            {
+                patch_rel14_branch_offset(
+                    code + reloc->patchOffset,
+                    reloc->symbolAddr - reloc->patchOffset);
+                // remove the relocation
+                reloc->type = R_PPC_NONE;
+            }
         }
     }
 
@@ -595,7 +623,8 @@ static int compare_imports(const void *a, const void *b)
     const struct RelImportEntry *impA = a;
     const struct RelImportEntry *impB = b;
 
-    return impA->moduleId - impB->moduleId;
+//    return impA->moduleId - impB->moduleId;
+    return impB->moduleId - impA->moduleId;
 }
 
 static void write_rel_file(struct Module *module, struct RelHeader *relHdr, const char *filename)
@@ -661,25 +690,11 @@ static void write_rel_file(struct Module *module, struct RelHeader *relHdr, cons
             relHdr->bssSize += shdr.sh_size;
     }
     
-    // In version 3 RELs, this is BEFORE the relocation table!
-    // 3. Write module import table
-
-    relHdr->importTableOffset = filePos;
-    for (i = 0, imp = &imports[0]; i < importsCount; i++, imp++)
-    {
-        // write import table entry
-        struct { uint32_t moduleId; uint32_t relocsOffset; } ent;
-        ent.moduleId     = imp->moduleId;
-        ent.relocsOffset = imp->relocsOffset;
-        bswap32(&ent.moduleId);
-        bswap32(&ent.relocsOffset);
-        write_checked(fout, relHdr->importTableOffset + i * 8, &ent, sizeof(ent));
-        filePos += sizeof(ent);
-    }
-    relHdr->importTableSize = importsCount * 8;
-
     // 2. Write relocation data
 
+    // In version 3 RELs, this is AFTER the import table, so skip over the import table for now
+    relHdr->importTableOffset = filePos;
+    filePos += 8 * importsCount;
     relHdr->relocationTableOffset = filePos;
     // sort imports by module id
     qsort(imports, importsCount, sizeof(struct RelImportEntry), compare_imports);
@@ -749,6 +764,21 @@ static void write_rel_file(struct Module *module, struct RelHeader *relHdr, cons
 
         filePos += sizeof(ent);
     }
+
+    // 3. Write module import table
+
+    //relHdr->importTableOffset = filePos;
+    for (i = 0, imp = &imports[0]; i < importsCount; i++, imp++)
+    {
+        // write import table entry
+        struct { uint32_t moduleId; uint32_t relocsOffset; } ent;
+        ent.moduleId     = imp->moduleId;
+        ent.relocsOffset = imp->relocsOffset;
+        bswap32(&ent.moduleId);
+        bswap32(&ent.relocsOffset);
+        write_checked(fout, relHdr->importTableOffset + i * 8, &ent, sizeof(ent));
+    }
+    relHdr->importTableSize = importsCount * 8;
     
     // 3.5. Write fixed values. VERSION 2/3 only!
     relHdr->align = 0x20; // TODO: Read me from a section.
