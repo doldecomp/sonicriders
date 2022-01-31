@@ -1,6 +1,6 @@
 .include "macros.inc"
 
-.section .ctors
+.section .rodata
 
 .global lbl_001C1198
 lbl_001C1198:

@@ -55,11 +55,11 @@ endif
 
 ifeq ($(VERBOSE),1)
 # this set of LDFLAGS outputs warnings.
-REL_LDFLAGS := -nodefaults -fp hard -r1 -m _prolog -g
+REL_LDFLAGS := -nodefaults -fp hard -r -m _prolog -g
 endif
 ifeq ($(VERBOSE),0)
 # this set of LDFLAGS generates no warnings.
-REL_LDFLAGS := -nodefaults -fp hard -r1 -m _prolog -g -w off
+REL_LDFLAGS := -nodefaults -fp hard -r -m _prolog -g -w off
 endif
 
 HOSTCFLAGS   := -Wall -O3 -s
@@ -107,8 +107,8 @@ $(ELF): $(O_FILES)
 # _Main.rel sources
 SOURCES := \
 	asm/_Main/text.s \
-    asm/_Main/ctors.s \
-    asm/_Main/dtors.s \
+    asm/_Main/rodata.s \
+    asm/_Main/data.s \
     asm/_Main/bss.s
 O_FILES := $(addsuffix .o,$(basename $(SOURCES)))
 ALL_O_FILES += $(O_FILES)

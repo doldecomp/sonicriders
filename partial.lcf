@@ -6,8 +6,6 @@ SECTIONS
     {
         .init   :{}
         .text   :{}
-        .ctors  :{}
-        .dtors  :{}
         .rodata :{}
         .data   :{}
         .bss    :{}

@@ -1,11 +1,8 @@
 .include "macros.inc"
 
-# TODO: The script thought this was rodata, but I changed it to BSS.
-# Does REL rodata act differently?
-
 .section .bss
 
-.balign 8
+.balign 32
 
 .global lbl_10000000
 lbl_10000000:

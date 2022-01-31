@@ -1,8 +1,8 @@
 .include "macros.inc"
 
-.section .dtors
+.section .data
 
-.balign 8
+.balign 32
 
 .global lbl_001D7AC0
 lbl_001D7AC0:
