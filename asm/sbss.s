@@ -1272,4 +1272,4 @@ lbl_8021C314:
 	.skip 0x4
 .global lbl_8021C318
 lbl_8021C318:
-	.skip 0x28
+	.skip 0x18

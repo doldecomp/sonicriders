@@ -2,7 +2,7 @@
 
 .section .text, "ax"  # 0x800055E0 - 0x800E2F20
 
-.skip 0x100
+#.skip 0x100
 
 .global lbl_800055E0
 lbl_800055E0:

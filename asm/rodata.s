@@ -1050,4 +1050,4 @@ lbl_800ED2C0:
 	.incbin "baserom.dol", 0xEA2C0, 0x18
 .global lbl_800ED2D8
 lbl_800ED2D8:
-	.incbin "baserom.dol", 0xEA2D8, 0x8
+	.incbin "baserom.dol", 0xEA2D8, 0x4
