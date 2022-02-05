@@ -252,7 +252,7 @@ lbl_8021C4EC:
 	.incbin "baserom.dol", 0x12320C, 0x4
 .global lbl_8021C4F0
 lbl_8021C4F0:
-	.incbin "baserom.dol", 0x123210, 0x4
+	.4byte lbl_801CF0A0 + 0x80
 .global lbl_8021C4F4
 lbl_8021C4F4:
 	.incbin "baserom.dol", 0x123214, 0x4
@@ -1470,13 +1470,13 @@ lbl_8021CF40:
 	.incbin "baserom.dol", 0x123C60, 0x8
 .global lbl_8021CF48
 lbl_8021CF48:
-	.incbin "baserom.dol", 0x123C68, 0x4
+	.4byte lbl_800E5028 + 0x80
 .global lbl_8021CF4C
 lbl_8021CF4C:
 	.incbin "baserom.dol", 0x123C6C, 0x4
 .global lbl_8021CF50
 lbl_8021CF50:
-	.incbin "baserom.dol", 0x123C70, 0x4
+	.4byte lbl_800E50F8 + 0x108
 .global lbl_8021CF54
 lbl_8021CF54:
 	.incbin "baserom.dol", 0x123C74, 0x4
