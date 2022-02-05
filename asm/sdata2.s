@@ -1512,4 +1512,4 @@ lbl_8021CF88:
 	.incbin "baserom.dol", 0x123CA8, 0x8
 .global lbl_8021CF90
 lbl_8021CF90:
-	.incbin "baserom.dol", 0x123CB0, 0x10
+	.incbin "baserom.dol", 0x123CB0, 0x4

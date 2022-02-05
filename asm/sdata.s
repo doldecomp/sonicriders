@@ -318,4 +318,4 @@ lbl_8021BB30:
 	.incbin "baserom.dol", 0x123050, 0x8
 .global lbl_8021BB38
 lbl_8021BB38:
-	.incbin "baserom.dol", 0x123058, 0x8
+	.incbin "baserom.dol", 0x123058, 0x4

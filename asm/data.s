@@ -519,4 +519,4 @@ lbl_80125DA4:
 	.incbin "baserom.dol", 0x122D84, 0x24
 .global lbl_80125DC8
 lbl_80125DC8:
-	.incbin "baserom.dol", 0x122DA8, 0x38
+	.incbin "baserom.dol", 0x122DA8, 0x34

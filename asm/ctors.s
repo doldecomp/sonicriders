@@ -6,4 +6,4 @@
 
 .global lbl_800E2F20
 lbl_800E2F20:
-	.incbin "baserom.dol", 0xDFF20, 0x20
+	.incbin "baserom.dol", 0xDFF20, 0x4
