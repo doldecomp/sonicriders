@@ -54,7 +54,7 @@ lbl_8021B908:
 	.incbin "baserom.dol", 0x122E28, 0x10
 .global lbl_8021B918
 lbl_8021B918:
-	.incbin "baserom.dol", 0x122E38, 0x4
+	.4byte lbl_80117C98
 .global lbl_8021B91C
 lbl_8021B91C:
 	.incbin "baserom.dol", 0x122E3C, 0x8
@@ -81,7 +81,7 @@ lbl_8021B948:
 	.incbin "baserom.dol", 0x122E68, 0x8
 .global lbl_8021B950
 lbl_8021B950:
-	.incbin "baserom.dol", 0x122E70, 0x4
+	.4byte lbl_8000FF7C
 .global lbl_8021B954
 lbl_8021B954:
 	.incbin "baserom.dol", 0x122E74, 0x4
@@ -93,13 +93,13 @@ lbl_8021B960:
 	.incbin "baserom.dol", 0x122E80, 0x8
 .global lbl_8021B968
 lbl_8021B968:
-	.incbin "baserom.dol", 0x122E88, 0x4
+	.4byte lbl_80119F74 + 0x34
 .global lbl_8021B96C
 lbl_8021B96C:
 	.incbin "baserom.dol", 0x122E8C, 0x4
 .global lbl_8021B970
 lbl_8021B970:
-	.incbin "baserom.dol", 0x122E90, 0x4
+	.4byte lbl_800137A4
 .global lbl_8021B974
 lbl_8021B974:
 	.incbin "baserom.dol", 0x122E94, 0x8
@@ -117,13 +117,13 @@ lbl_8021B988:
 	.incbin "baserom.dol", 0x122EA8, 0x8
 .global lbl_8021B990
 lbl_8021B990:
-	.incbin "baserom.dol", 0x122EB0, 0x4
+	.4byte lbl_8011A1E8
 .global lbl_8021B994
 lbl_8021B994:
 	.incbin "baserom.dol", 0x122EB4, 0xC
 .global lbl_8021B9A0
 lbl_8021B9A0:
-	.incbin "baserom.dol", 0x122EC0, 0x4
+	.4byte lbl_8011A5AC + 0x24
 .global lbl_8021B9A4
 lbl_8021B9A4:
 	.incbin "baserom.dol", 0x122EC4, 0x4
@@ -138,7 +138,7 @@ lbl_8021B9B0:
 	.incbin "baserom.dol", 0x122ED0, 0x4
 .global lbl_8021B9B4
 lbl_8021B9B4:
-	.incbin "baserom.dol", 0x122ED4, 0x4
+	.4byte lbl_80019870
 .global lbl_8021B9B8
 lbl_8021B9B8:
 	.incbin "baserom.dol", 0x122ED8, 0x4
@@ -147,31 +147,37 @@ lbl_8021B9BC:
 	.incbin "baserom.dol", 0x122EDC, 0x4
 .global lbl_8021B9C0
 lbl_8021B9C0:
-	.incbin "baserom.dol", 0x122EE0, 0x8
+	.4byte lbl_8011A618 + 0x10
+	.skip 0x4
 .global lbl_8021B9C8
 lbl_8021B9C8:
-	.incbin "baserom.dol", 0x122EE8, 0x8
+	.4byte lbl_8011A618 + 0x58
+	.skip 0x4
 .global lbl_8021B9D0
 lbl_8021B9D0:
-	.incbin "baserom.dol", 0x122EF0, 0x8
+	.4byte lbl_8011A618 + 0xA0
+	.skip 0x4
 .global lbl_8021B9D8
 lbl_8021B9D8:
-	.incbin "baserom.dol", 0x122EF8, 0x8
+	.4byte lbl_8011A618 + 0xE8
+	.skip 0x4
 .global lbl_8021B9E0
 lbl_8021B9E0:
 	.incbin "baserom.dol", 0x122F00, 0x8
 .global lbl_8021B9E8
 lbl_8021B9E8:
-	.incbin "baserom.dol", 0x122F08, 0x4
+	.4byte lbl_80022108
 .global lbl_8021B9EC
 lbl_8021B9EC:
-	.incbin "baserom.dol", 0x122F0C, 0x4
+	.4byte lbl_80022130
 .global lbl_8021B9F0
 lbl_8021B9F0:
-	.incbin "baserom.dol", 0x122F10, 0x8
+	.4byte lbl_801208D0
+	.skip 0x4
 .global lbl_8021B9F8
 lbl_8021B9F8:
-	.incbin "baserom.dol", 0x122F18, 0x8
+	.4byte lbl_80120950 + 0x140
+	.skip 0x4
 .global lbl_8021BA00
 lbl_8021BA00:
 	.incbin "baserom.dol", 0x122F20, 0x8
@@ -183,7 +189,8 @@ lbl_8021BA0A:
 	.incbin "baserom.dol", 0x122F2A, 0x6
 .global lbl_8021BA10
 lbl_8021BA10:
-	.incbin "baserom.dol", 0x122F30, 0x8
+	.4byte lbl_80120CA0
+	.skip 0x4
 .global lbl_8021BA18
 lbl_8021BA18:
 	.incbin "baserom.dol", 0x122F38, 0x4
@@ -252,10 +259,12 @@ lbl_8021BAAC:
 	.incbin "baserom.dol", 0x122FCC, 0x4
 .global lbl_8021BAB0
 lbl_8021BAB0:
-	.incbin "baserom.dol", 0x122FD0, 0x8
+	.4byte lbl_80121E64 + 0x44
+	.skip 0x4
 .global lbl_8021BAB8
 lbl_8021BAB8:
-	.incbin "baserom.dol", 0x122FD8, 0x8
+	.4byte lbl_80121FB8
+	.skip 0x4
 .global lbl_8021BAC0
 lbl_8021BAC0:
 	.incbin "baserom.dol", 0x122FE0, 0x8
@@ -273,7 +282,7 @@ lbl_8021BAD8:
 	.incbin "baserom.dol", 0x122FF8, 0x4
 .global lbl_8021BADC
 lbl_8021BADC:
-	.incbin "baserom.dol", 0x122FFC, 0x4
+	.4byte lbl_8021CB8C + 0x4
 .global lbl_8021BAE0
 lbl_8021BAE0:
 	.incbin "baserom.dol", 0x123000, 0x4
