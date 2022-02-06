@@ -2554,4 +2554,3 @@ lbl_80125DC8:
 	.4byte lbl_800E2F1C
 	.4byte lbl_800E2F1C
 	.4byte lbl_800E2F1C
-	#.4byte 0x00000000
